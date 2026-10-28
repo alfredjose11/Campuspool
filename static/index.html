@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CampusPool — Student Carpooling</title>
+<meta name="description" content="CampusPool makes campus commuting safe and affordable. Share rides, split fuel costs, and travel with verified college mates.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<style>
+/* ─── Google Fonts ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ─── Design Tokens ───────────────────────────────────────────── */
+:root {
+  --bg: #f5f7ff;
+  --surface: #ffffff;
+  --surface2: #f0f4ff;
+  --border: #e4e9f7;
+  --border2: #d0d8f0;
+  --ink: #0d1340;
+  --ink2: #4a5280;
+  --ink3: #8b93bc;
+  --brand: #4361ee;
+  --brand2: #7209b7;
+  --brand3: #3a0ca3;
+  --brand-g: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+  --brand-g2: linear-gradient(135deg, #4cc9f0 0%, #4361ee 50%, #7209b7 100%);
+  --ok: #0d9e6e;
+  --ok-bg: #d1fae9;
+  --bad: #e02020;
+  --bad-bg: #fee4e4;
+  --warn: #c47f00;
+  --warn-bg: #fff3cd;
+  --accent: #f72585;
+  --accent2: #4cc9f0;
+  --shadow-sm: 0 1px 3px rgba(67,97,238,.06), 0 4px 12px rgba(67,97,238,.08);
+  --shadow: 0 4px 20px rgba(67,97,238,.10), 0 1px 4px rgba(67,97,238,.06);
+  --shadow-lg: 0 12px 40px rgba(67,97,238,.15), 0 2px 8px rgba(67,97,238,.08);
+  --shadow-brand: 0 8px 24px rgba(67,97,238,.30);
+  --r: 16px;
+  --r2: 20px;
+  --rs: 10px;
+  --t: 0.2s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ─── Reset ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+html { scroll-behavior: smooth; scroll-padding-top: 80px }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.65 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Header ──────────────────────────────────────────────────── */
+header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: env(safe-area-inset-top, 0);
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(67,97,238,.07);
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1040px;
+  margin: auto;
+  padding: 14px 24px;
+}
+.logo {
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: -.7px;
+  background: var(--brand-g);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo::before {
+  content: "🚗";
+  -webkit-text-fill-color: initial;
+  font-size: 20px;
+}
+#who {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand-g);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(67,97,238,.3);
+}
+nav {
+  display: flex;
+  overflow-x: auto;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+  scrollbar-width: none;
+  gap: 4px;
+  border-top: 1px solid var(--border);
+}
+nav::-webkit-scrollbar { display: none }
+nav button {
+  background: none;
+  border: 0;
+  color: var(--ink3);
+  padding: 10px 14px;
+  font: 600 13px 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  white-space: nowrap;
+  transition: color var(--t), border-color var(--t);
+  letter-spacing: .1px;
+}
+nav button:hover { color: var(--brand) }
+nav button.on {
+  color: var(--brand);
+  border-color: var(--brand);
+  font-weight: 700;
+}
+
+/* ─── Main ────────────────────────────────────────────────────── */
+main { max-width: 1040px; margin: auto; padding: 32px 24px 80px; flex: 1; width: 100% }
+h2 { font-size: 26px; font-weight: 800; letter-spacing: -.6px; margin-bottom: 22px; color: var(--ink) }
+h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink3);
+  margin: 32px 0 14px;
+}
+
+/* ─── Cards ───────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t), transform var(--t), border-color var(--t);
+}
+.card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+  border-color: var(--border2);
+}
+
+/* ─── Route ───────────────────────────────────────────────────── */
+.route { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px }
+.route b { white-space: nowrap; color: var(--ink) }
+.route span {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, var(--brand), var(--brand2));
+  min-width: 20px;
+  position: relative;
+  opacity: .3;
+  border-radius: 99px;
+}
+.route span::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -4px;
+  border: 4px solid transparent;
+  border-left: 7px solid var(--brand2);
+  opacity: 3;
+}
+
+/* ─── Meta ────────────────────────────────────────────────────── */
+.meta { color: var(--ink2); font-size: 13px; line-height: 1.7; margin: 6px 0 12px }
+
+/* ─── Row ─────────────────────────────────────────────────────── */
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+
+/* ─── Forms ───────────────────────────────────────────────────── */
+form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px }
+label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: .2px;
+  display: block;
+}
+input, select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--surface2);
+  color: var(--ink);
+  font: 14px 'Plus Jakarta Sans', sans-serif;
+  margin-top: 6px;
+  transition: border-color var(--t), box-shadow var(--t), background var(--t);
+  outline: none;
+  appearance: none;
+}
+input:focus, select:focus {
+  border-color: var(--brand);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(67,97,238,.10);
+}
+input::placeholder { color: var(--ink3) }
+
+/* ─── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  background: var(--brand-g);
+  color: #fff;
+  border: 0;
+  border-radius: var(--rs);
+  padding: 11px 20px;
+  font: 700 13.5px 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: opacity var(--t), transform var(--t), box-shadow var(--t);
+  box-shadow: var(--shadow-brand);
+  white-space: nowrap;
+  letter-spacing: .1px;
+}
+.btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 12px 28px rgba(67,97,238,.35) }
+.btn:active { transform: translateY(0); opacity: 1 }
+.btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px }
+.btn.g {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--ink2);
+  box-shadow: var(--shadow-sm);
+}
+.btn.g:hover { background: var(--surface2); border-color: var(--border2); box-shadow: var(--shadow-sm); transform: none }
+.btn.r { background: linear-gradient(135deg, #e02020, #b91c1c); box-shadow: 0 6px 18px rgba(220,38,38,.28) }
+.btn.r:hover { box-shadow: 0 10px 24px rgba(220,38,38,.36) }
+.btn.s { padding: 7px 14px; font-size: 12.5px }
+.btn.sos { background: linear-gradient(135deg, #e02020, #b91c1c); animation: sosPulse 1.6s infinite }
+@keyframes sosPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,.5) }
+  50% { box-shadow: 0 0 0 10px rgba(220,38,38,0) }
+}
+.full { grid-column: 1 / -1 }
+
+/* ─── Tags ────────────────────────────────────────────────────── */
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 99px;
+  background: var(--border);
+  color: var(--ink2);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.tag.Confirmed, .tag.Completed, .tag.Open { background: var(--ok-bg); color: var(--ok) }
+.tag.Rejected, .tag.Expired, .tag.Cancelled { background: var(--bad-bg); color: var(--bad) }
+.tag.SOS { background: var(--bad); color: #fff }
+.tag.Pending { background: var(--warn-bg); color: var(--warn) }
+.tag.In { background: rgba(67,97,238,.10); color: var(--brand) }
+
+/* ─── Empty State ─────────────────────────────────────────────── */
+.empty {
+  color: var(--ink3);
+  text-align: center;
+  padding: 52px 20px;
+  font-size: 14px;
+  line-height: 2;
+  border: 2px dashed var(--border);
+  border-radius: var(--r2);
+  background: var(--surface);
+}
+
+/* ─── Toast ───────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0));
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  padding: 13px 24px;
+  border-radius: 99px;
+  display: none;
+  z-index: 9999;
+  max-width: 90%;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 12px 40px rgba(13,19,64,.3), 0 0 0 1px rgba(255,255,255,.08);
+  white-space: nowrap;
+  animation: toastIn .22s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px) }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) }
+}
+
+/* ─── Chat ────────────────────────────────────────────────────── */
+#chat {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,19,64,.35);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+}
+#chat > div {
+  background: var(--surface);
+  width: 100%;
+  max-width: 560px;
+  border-radius: var(--r2) var(--r2) 0 0;
+  padding: 22px 20px calc(20px + env(safe-area-inset-bottom, 0));
+  max-height: 82dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -16px 60px rgba(13,19,64,.14);
+}
+#msgs {
+  overflow: auto;
+  flex: 1;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+  padding-right: 4px;
+}
+.m {
+  padding: 10px 14px;
+  border-radius: 16px 16px 16px 4px;
+  background: var(--surface2);
+  max-width: 82%;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+}
+.m.me {
+  background: var(--brand-g);
+  color: #fff;
+  align-self: flex-end;
+  border-radius: 16px 16px 4px 16px;
+  border-color: transparent;
+}
+.m small { display: block; opacity: .65; font-size: 11px; margin-bottom: 2px; font-weight: 600 }
+
+/* ─── Auth ────────────────────────────────────────────────────── */
+.auth { max-width: 460px; margin: 40px auto }
+.auth .card { border-radius: 24px; padding: 36px; box-shadow: var(--shadow-lg) }
+.auth h2 { font-size: 27px; margin-bottom: 6px }
+
+/* ─── Modal ───────────────────────────────────────────────────── */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,19,64,.45);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+#modal > div {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 580px;
+  width: 100%;
+  max-height: 80dvh;
+  overflow: auto;
+  box-shadow: 0 32px 80px rgba(13,19,64,.18);
+  border: 1px solid var(--border);
+}
+#modal h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  text-transform: none;
+  letter-spacing: -.3px;
+  color: var(--ink);
+}
+
+/* ─── Hero ────────────────────────────────────────────────────── */
+.hero {
+  background: var(--brand-g2);
+  border-radius: 28px;
+  padding: 72px 40px 64px;
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: rgba(255,255,255,.06);
+  border-radius: 50%;
+}
+.hero h1 {
+  font-size: clamp(30px, 5.5vw, 52px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 18px;
+  position: relative;
+}
+.hero p {
+  font-size: 17px;
+  color: rgba(255,255,255,.85);
+  max-width: 520px;
+  margin: 0 auto 32px;
+  position: relative;
+  line-height: 1.75;
+}
+.hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative }
+.hero-btns .btn {
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--brand);
+  box-shadow: 0 6px 24px rgba(0,0,0,.18);
+  border-radius: 12px;
+}
+.hero-btns .btn:hover { background: #f4f6ff; transform: translateY(-2px) }
+.hero-btns .btn.outline {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.45);
+  box-shadow: none;
+}
+.hero-btns .btn.outline:hover { background: rgba(255,255,255,.25) }
+
+/* ─── Pill Stats Banner ───────────────────────────────────────── */
+.hero-pills {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  position: relative;
+}
+.hero-pill {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  border-radius: 99px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+/* ─── Feature Grid ────────────────────────────────────────────── */
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 36px }
+.feat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t), transform var(--t);
+}
+.feat:hover { box-shadow: var(--shadow); transform: translateY(-2px) }
+.feat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.feat h4 { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; color: var(--ink) }
+.feat p { font-size: 13px; color: var(--ink2); line-height: 1.65 }
+
+/* ─── Steps ───────────────────────────────────────────────────── */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 36px }
+.step {
+  text-align: center;
+  padding: 24px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow-sm);
+}
+.step-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-g);
+  color: #fff;
+  font-weight: 800;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 6px 16px rgba(67,97,238,.3);
+}
+.step h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px }
+.step p { font-size: 13px; color: var(--ink2); line-height: 1.65 }
+
+/* ─── FAQ ─────────────────────────────────────────────────────── */
+.faq-item { border-bottom: 1px solid var(--border) }
+.faq-q {
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 18px 0;
+  font: 600 14px 'Plus Jakarta Sans', sans-serif;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  transition: color var(--t);
+}
+.faq-q:hover { color: var(--brand) }
+.faq-q .arr { font-size: 18px; transition: transform var(--t); flex-shrink: 0 }
+.faq-item.open .faq-q .arr { transform: rotate(180deg) }
+.faq-a { display: none; padding: 0 0 18px; font-size: 13.5px; color: var(--ink2); line-height: 1.8 }
+.faq-item.open .faq-a { display: block }
+
+/* ─── Info Box ────────────────────────────────────────────────── */
+.info-box {
+  background: rgba(67,97,238,.07);
+  border: 1px solid rgba(67,97,238,.18);
+  border-radius: var(--rs);
+  padding: 13px 16px;
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.75;
+  margin: 12px 0;
+}
+.info-box.warn { background: var(--warn-bg); border-color: rgba(196,127,0,.25); color: #7c5000 }
+.info-box.ok { background: var(--ok-bg); border-color: rgba(13,158,110,.25); color: #065f46 }
+
+/* ─── Stats Bar ───────────────────────────────────────────────── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.stat {
+  background: var(--surface);
+  padding: 20px 16px;
+  text-align: center;
+  border-radius: var(--r2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.stat-val {
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--brand-g);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+.stat-lbl { font-size: 12px; color: var(--ink3); margin-top: 4px; font-weight: 600 }
+
+/* ─── Profile Avatar ──────────────────────────────────────────── */
+.prof-header { display: flex; align-items: center; gap: 18px; margin-bottom: 26px }
+.prof-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: var(--brand-g);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(67,97,238,.3);
+}
+
+/* ─── Footer ──────────────────────────────────────────────────── */
+footer {
+  background: var(--ink);
+  border-top: none;
+  margin-top: auto;
+}
+.foot-inner {
+  max-width: 1040px;
+  margin: auto;
+  padding: 48px 24px 28px;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 36px;
+}
+@media(max-width: 720px) {
+  .foot-inner { grid-template-columns: 1fr 1fr; gap: 28px }
+  .foot-brand-col { grid-column: 1 / -1 }
+  main { padding: 20px 16px 60px }
+  .top { padding: 12px 16px }
+}
+.foot-brand-col .logo-text {
+  font-weight: 800;
+  font-size: 19px;
+  background: var(--brand-g);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.foot-brand-col p { font-size: 13px; color: #64748b; line-height: 1.8; max-width: 240px }
+.foot-brand-col .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px }
+.badge {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+.foot-col h5 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #475569;
+  margin-bottom: 14px;
+}
+.foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px }
+.foot-col a, .foot-col button {
+  font-size: 13px;
+  color: #64748b;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color var(--t);
+  font-family: inherit;
+}
+.foot-col a:hover, .foot-col button:hover { color: #94a3b8 }
+.foot-bottom {
+  border-top: 1px solid rgba(255,255,255,.07);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.foot-bottom p { font-size: 12px; color: #475569 }
+.foot-bottom .links { display: flex; gap: 18px }
+.foot-bottom .links button {
+  background: none;
+  border: 0;
+  color: #475569;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color var(--t);
+  font-family: inherit;
+}
+.foot-bottom .links button:hover { color: #94a3b8 }
+
+/* ─── Seat Progress Bar ───────────────────────────────────────── */
+.seat-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 10px 0 14px;
+  overflow: hidden;
+}
+.seat-bar-fill {
+  height: 100%;
+  background: var(--brand-g);
+  border-radius: 99px;
+  transition: width .4s ease;
+}
+
+/* ─── Section Dividers ────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.section-header h3 { margin: 0 }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="logo" onclick="if(window.S&&S.me)A.go('search');else{tab='login';render()}">CampusPool</div>
+    <div id="who"></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<main id="app"></main>
+<div id="toast"></div>
+
+<!-- Chat -->
+<div id="chat"><div>
+  <div class="row" style="justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--border)">
+    <b style="font-size:15px">💬 Ride Chat</b>
+    <button class="btn g s" onclick="A.closeChat()">Close</button>
+  </div>
+  <div id="msgs"></div>
+  <div class="row" style="flex-wrap:nowrap;gap:10px">
+    <input id="cin" placeholder="Type a message…" onkeydown="if(event.key==='Enter')A.send()" style="flex:1">
+    <button class="btn" onclick="A.send()">Send</button>
+  </div>
+</div></div>
+
+<!-- Modal (Terms / FAQ / Safety) -->
+<div id="modal"><div id="modal-inner"></div></div>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-brand-col">
+      <div class="logo-text">CampusPool</div>
+      <p>Safe, affordable campus carpooling. Share rides, split costs, and travel with verified college mates.</p>
+      <div class="badges">
+        <span class="badge">🔒 OTP Verified</span>
+        <span class="badge">💰 Cost-share only</span>
+        <span class="badge">🎓 Campus use</span>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h5>Platform</h5>
+      <ul>
+        <li><button onclick="openModal('how')">How it works</button></li>
+        <li><button onclick="openModal('safety')">Safety guidelines</button></li>
+        <li><button onclick="openModal('faq')">FAQ</button></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><button onclick="openModal('terms')">Terms of service</button></li>
+        <li><button onclick="openModal('privacy')">Privacy policy</button></li>
+        <li><button onclick="openModal('rules')">Community rules</button></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h5>Support</h5>
+      <ul>
+        <li><button onclick="openModal('contact')">Contact admin</button></li>
+        <li><button onclick="openModal('sos-info')">SOS &amp; emergencies</button></li>
+        <li><button onclick="openModal('faq')">Troubleshooting</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 CampusPool · Built for campus communities · Not a commercial transport service</p>
+    <div class="links">
+      <button onclick="openModal('terms')">Terms</button>
+      <button onclick="openModal('privacy')">Privacy</button>
+      <button onclick="openModal('contact')">Contact</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─── Helpers ─────────────────────────────────────────────────── */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=t=>new Date(t).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'});
+const initials=n=>n?n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase():'?';
+const ratingStr=u=>u&&u.rc?(u.rs/u.rc).toFixed(1)+' ★':'New';
+
+/* ─── State ───────────────────────────────────────────────────── */
+let S={me:null,users:[],rides:[],bk:[],msgs:[],sos:[],rep:[]};
+let tab='login',q={searched:false},pend=null,chatB=null,devOtp=null;
+const U=id=>S.users.find(u=>u.id===id);
+const R=id=>S.rides.find(r=>r.id===id);
+const B=id=>S.bk.find(b=>b.id===id);
+const me=()=>U(S.me);
+
+/* ─── Toast ───────────────────────────────────────────────────── */
+function toast(m,type=''){
+  const t=$('toast');
+  t.textContent=m;
+  t.style.display='block';
+  t.style.background=type==='ok'?'#065f46':type==='err'?'#450a0a':'#1e293b';
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>{t.style.display='none'},3500);
+}
+
+/* ─── Modal ───────────────────────────────────────────────────── */
+const MODALS={
+  how:`<h3>🚗 How CampusPool Works</h3>
+    <div style="display:grid;gap:16px;margin-top:16px">
+      <div style="display:flex;gap:14px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">1</div><div><b>Create your account</b><br><span style="color:var(--ink2);font-size:13px">Sign up with your college email. We send an OTP to verify it's really you — no fake accounts.</span></div></div>
+      <div style="display:flex;gap:14px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">2</div><div><b>Find or post a ride</b><br><span style="color:var(--ink2);font-size:13px">Drivers post available seats. Passengers search by pickup, destination and time, then request a seat.</span></div></div>
+      <div style="display:flex;gap:14px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">3</div><div><b>Coordinate via chat</b><br><span style="color:var(--ink2);font-size:13px">Once a booking is confirmed, use the built-in ride chat to agree on the exact pickup spot.</span></div></div>
+      <div style="display:flex;gap:14px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">4</div><div><b>Rate and build trust</b><br><span style="color:var(--ink2);font-size:13px">After the ride, rate your co-travellers. High ratings build reputation and trust in the community.</span></div></div>
+    </div>`,
+  safety:`<h3>🛡️ Safety Guidelines</h3>
+    <div style="color:var(--ink2);font-size:13.5px;line-height:1.9;margin-top:14px">
+      <p><b style="color:var(--ink)">Before the ride</b></p>
+      <ul style="padding-left:18px;margin:8px 0 16px">
+        <li>Only accept/request rides from OTP-verified users</li>
+        <li>Check the driver's rating before confirming</li>
+        <li>Confirm pickup location via the chat before departing</li>
+        <li>Share your trip details with a trusted friend or family member</li>
+      </ul>
+      <p><b style="color:var(--ink)">During the ride</b></p>
+      <ul style="padding-left:18px;margin:8px 0 16px">
+        <li>Sit in the back seat if you are alone with the driver</li>
+        <li>Keep your phone charged and accessible</li>
+        <li>Use the in-app <b>SOS button</b> in any emergency — it alerts campus administrators instantly</li>
+        <li>Never share your OTP or password with anyone</li>
+      </ul>
+      <p><b style="color:var(--ink)">Cost sharing rules</b></p>
+      <ul style="padding-left:18px;margin:8px 0">
+        <li>Fare = total fuel cost ÷ (total seats + 1). Drivers pay their share too</li>
+        <li>No profit allowed — CampusPool is a cost-sharing platform only</li>
+        <li>Agree on payment method (cash / UPI) before the ride</li>
+      </ul>
+    </div>`,
+  faq:`<h3>❓ Frequently Asked Questions</h3>
+    <div class="faq-item" style="margin-top:14px">
+      <button class="faq-q" onclick="toggleFaq(this)">Is CampusPool free to use? <span class="arr">⌄</span></button>
+      <div class="faq-a">Yes, the platform is completely free. You only pay the actual fuel cost share for the ride — no booking fees, no commissions, no profit.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">How does OTP verification work? <span class="arr">⌄</span></button>
+      <div class="faq-a">When you register, a 6-digit code is emailed to your college address. You must enter it within 10 minutes. This ensures only real students with valid college emails can join.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Can I cancel a booking? <span class="arr">⌄</span></button>
+      <div class="faq-a">Yes — you can cancel a Pending or Confirmed booking before the ride starts. The seat is automatically released back to the driver. Please cancel as early as possible to be considerate.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What happens when I press SOS? <span class="arr">⌄</span></button>
+      <div class="faq-a">The booking status changes to "SOS Active" and campus administrators are immediately notified with your name, time, and your emergency contact details. The SOS button is only available during an active In Progress ride.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">I didn't receive my verification email. What do I do? <span class="arr">⌄</span></button>
+      <div class="faq-a">Check your spam folder first. If SMTP is not configured on this deployment, the code will be printed on the registration confirmation screen directly. You can also try registering again after 30 seconds to get a fresh code.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">How is my rating calculated? <span class="arr">⌄</span></button>
+      <div class="faq-a">After a completed ride, both driver and passenger can rate each other on a scale of 1–5. Your displayed rating is the average of all ratings received. Users rated below 3.0 are flagged in the admin panel.</div>
+    </div>`,
+  terms:`<h3>📄 Terms of Service</h3>
+    <div style="color:var(--ink2);font-size:13px;line-height:1.9;margin-top:14px">
+      <p><b style="color:var(--ink)">1. Nature of service</b><br>CampusPool is a peer-to-peer ride-sharing platform intended exclusively for students of the associated educational institution. It facilitates cost-sharing for fuel expenses and does not operate as a commercial transport service.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">2. Eligibility</b><br>You must be an enrolled student or staff member with a valid institutional email address to register.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">3. User conduct</b><br>Users agree to: (a) provide accurate information; (b) not use the platform for commercial purposes; (c) behave respectfully toward other users; (d) honour confirmed bookings or cancel promptly.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">4. Liability</b><br>CampusPool is a platform only. The institution and platform administrators are not liable for any accidents, disputes, or losses arising from rides arranged through this platform. Use at your own risk.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">5. Account suspension</b><br>Administrators reserve the right to suspend accounts for violations of these terms, abusive behaviour, or low ratings below 2.5.</p>
+    </div>`,
+  privacy:`<h3>🔐 Privacy Policy</h3>
+    <div style="color:var(--ink2);font-size:13px;line-height:1.9;margin-top:14px">
+      <p><b style="color:var(--ink)">Data we collect</b><br>Name, college email, phone number, emergency contact, ride history, ratings, and chat messages.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">How we use it</b><br>Your data is used solely to operate the carpooling service: matching rides, verifying identity, enabling chat, and maintaining safety through SOS alerts. We do not sell your data.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">Data visibility</b><br>Your name and rating are visible to other logged-in users. Your email and phone are only visible to users in a confirmed booking with you and to administrators.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">Data retention</b><br>Your account data is retained as long as your account is active. You may contact an administrator to request deletion.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">Cookies</b><br>We use a single session cookie to keep you logged in. No third-party tracking cookies are used.</p>
+    </div>`,
+  rules:`<h3>🤝 Community Rules</h3>
+    <div style="color:var(--ink2);font-size:13.5px;line-height:1.9;margin-top:14px">
+      <ul style="padding-left:18px">
+        <li>Be on time — your co-travellers depend on you</li>
+        <li>Keep the vehicle clean and respect the driver's property</li>
+        <li>No smoking, alcohol, or inappropriate behaviour during rides</li>
+        <li>Honour the agreed fare — pay cash or UPI before or right after the ride</li>
+        <li>Rate honestly — ratings keep the community safe and trustworthy</li>
+        <li>Use the Report button for safety concerns; use it in good faith only</li>
+        <li>Do not share personal contact details outside the platform unless you know the person</li>
+        <li>Repeated cancellations without notice may result in suspension</li>
+      </ul>
+    </div>`,
+  contact:`<h3>📬 Contact Admin</h3>
+    <div style="color:var(--ink2);font-size:13.5px;line-height:1.9;margin-top:14px">
+      <p>For urgent safety issues, use the <b>SOS button</b> inside an active ride.</p>
+      <p style="margin-top:10px">For account issues, disputes, or feedback, contact your campus administrator at the email address configured for this deployment.</p>
+      <p style="margin-top:10px">Admins can also be reached by logging in with admin credentials and accessing the <b>Admin</b> tab, which shows all SOS alerts and reports in real time.</p>
+      <div class="info-box" style="margin-top:16px">💡 If you believe your account was suspended incorrectly, email the admin directly with your registered college email for review.</div>
+    </div>`,
+  'sos-info':`<h3>🚨 SOS &amp; Emergency Procedures</h3>
+    <div style="color:var(--ink2);font-size:13.5px;line-height:1.9;margin-top:14px">
+      <p><b style="color:var(--ink)">In-app SOS</b><br>During an active ride (In Progress status), both the driver and passenger see a red <b>SOS 🚨</b> button. Pressing it immediately notifies all campus administrators with your name, time, and emergency contact.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">Emergency contacts</b><br>Add your emergency contact in your <b>Profile</b> page. This number is shared with admins during an SOS alert.</p>
+      <p style="margin-top:12px"><b style="color:var(--ink)">National emergency numbers (India)</b></p>
+      <ul style="padding-left:18px;margin:8px 0">
+        <li>Police: <b>100</b></li>
+        <li>Ambulance: <b>108</b></li>
+        <li>Women helpline: <b>1091</b></li>
+        <li>Emergency (unified): <b>112</b></li>
+      </ul>
+      <div class="info-box" style="margin-top:10px;background:var(--bad-bg);border-color:rgba(220,38,38,.3);color:#7f1d1d">⚠️ Always call 112 first in a life-threatening emergency. The in-app SOS supplements — it does not replace — calling emergency services.</div>
+    </div>`
+};
+
+function openModal(key){
+  $('modal-inner').innerHTML=(MODALS[key]||'<h3>Coming soon</h3>')+'<div style="margin-top:20px;text-align:right"><button class="btn g s" onclick="closeModal()">Close</button></div>';
+  $('modal').style.display='flex';
+}
+function closeModal(){$('modal').style.display='none'}
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+function toggleFaq(btn){const item=btn.closest('.faq-item');item.classList.toggle('open')}
+
+/* ─── Sweep & Nav ─────────────────────────────────────────────── */
+function sweep(){
+  const n=Date.now();
+  S.bk.forEach(b=>{const r=R(b.rid);if(b.st==='Pending'&&r&&(r.time<n||r.st==='cancelled'))b.st='Expired'});
+  S.rides.forEach(r=>{if(r.st==='open'&&(r.left<=0||r.time<n))r.st='closed'});
+}
+
+function buildNav(){
+  const m=me();
+  if(!m){$('nav').innerHTML='';$('who').innerHTML='';return;}
+  const tabs=[['search','🔍 Find a ride'],['post','＋ Post ride'],['mine','My rides'],['prof','Profile'],...(m.role==='admin'?[['adm','⚙ Admin']]:[]),['out','Log out']];
+  $('nav').innerHTML=tabs.map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="A.go('${k}')">${l}</button>`).join('');
+  $('who').innerHTML=`<div class="avatar">${initials(m.name)}</div><span>${m.name.split(' ')[0]} · ${ratingStr(m)}</span>`;
+}
+
+function render(){sweep();buildNav();const m=me();$('app').innerHTML=!m?vLanding():({search:vSearch,post:vPost,mine:vMine,prof:vProf,adm:vAdm}[tab]||vSearch)()}
+
+/* ─── Landing (not logged in) ─────────────────────────────────── */
+function vLanding(){
+  if(pend) return vVerify();
+  // If user clicked Log in or Get started, show only the auth form
+  if(tab==='login'||tab==='reg') return vAuthForm();
+  return`
+  <div class="hero">
+    <h1>Campus Rides,<br>Split Costs ✌️</h1>
+    <p>The smart way to commute. Find verified college mates heading your way, share the fuel cost, and travel safely — every day.</p>
+    <div class="hero-btns">
+      <button class="btn" onclick="tab='reg';render()">Get started — it's free</button>
+      <button class="btn outline" onclick="tab='login';render()">Log in</button>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:8px"><h3 style="display:inline-block">How it works</h3></div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><h4>Verify your email</h4><p>Sign up with your college email. A 6-digit OTP confirms your identity.</p></div>
+    <div class="step"><div class="step-num">2</div><h4>Find or post a ride</h4><p>Search for open rides or post your own and accept passengers.</p></div>
+    <div class="step"><div class="step-num">3</div><h4>Chat &amp; coordinate</h4><p>Use in-app chat to agree on exact pickup spot and time.</p></div>
+    <div class="step"><div class="step-num">4</div><h4>Ride &amp; rate</h4><p>Complete the trip and rate each other to build community trust.</p></div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:8px"><h3 style="display:inline-block">Why CampusPool?</h3></div>
+  <div class="feat-grid">
+    <div class="feat"><div class="feat-icon">🔒</div><h4>OTP-verified accounts</h4><p>Only real students with valid college emails can join. No fake profiles.</p></div>
+    <div class="feat"><div class="feat-icon">💰</div><h4>Cost-sharing only</h4><p>Fare = fuel ÷ (seats + 1). Drivers pay their share too. Zero profit allowed.</p></div>
+    <div class="feat"><div class="feat-icon">💬</div><h4>In-ride chat</h4><p>Coordinate pickup spots directly in the app once your booking is confirmed.</p></div>
+    <div class="feat"><div class="feat-icon">🚨</div><h4>Emergency SOS</h4><p>One tap alerts campus admins with your location and emergency contact instantly.</p></div>
+    <div class="feat"><div class="feat-icon">⭐</div><h4>Trust ratings</h4><p>Rate every ride. Community ratings keep bad actors accountable.</p></div>
+    <div class="feat"><div class="feat-icon">📱</div><h4>Works on any device</h4><p>No app to download. Opens in any browser on any phone or laptop.</p></div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;text-align:center;box-shadow:var(--shadow)">
+    <div style="font-size:32px;margin-bottom:8px">🎓</div>
+    <h2 style="margin-bottom:8px">Ready to save on commuting?</h2>
+    <p class="meta" style="max-width:400px;margin:0 auto 20px">Join your campus community on CampusPool. Sign up in under 2 minutes.</p>
+    <button class="btn" style="padding:13px 32px;font-size:15px" onclick="tab='reg';render()">Create free account</button>
+  </div>`;
+}
+
+function vVerify(){
+  const devBox=devOtp?`
+    <div style="margin:16px 0;padding:14px 18px;background:#fef9c3;border:2px solid #fbbf24;border-radius:10px;color:#713f12">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">🔧 Dev mode — no email sent</div>
+      <div style="font-size:28px;font-weight:800;letter-spacing:8px;font-family:monospace">${devOtp}</div>
+      <div style="font-size:12px;margin-top:6px">SMTP is not configured. Copy this code into the field below.</div>
+    </div>`:
+    `<div class="info-box">📬 Check your college inbox (and spam folder) for a 6-digit code.</div>`;
+  return`<div class="auth"><div class="card">
+    <h2>Verify your email</h2>
+    <p class="meta">We sent a code to <strong>${esc(pend.email)}</strong>. It expires in 10 minutes.</p>
+    ${devBox}
+    <label style="margin-top:8px">Verification code
+      <input id="otp" inputmode="numeric" placeholder="Enter 6-digit code" value="${devOtp||''}" style="font-size:22px;letter-spacing:6px;text-align:center;font-weight:700">
+    </label>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="A.verify()">Verify &amp; Continue →</button>
+      <button class="btn g" onclick="pend=null;devOtp=null;tab='reg';render()">← Back</button>
+    </div>
+  </div></div>`;
+}
+
+function vAuthForm(){
+  const isReg=tab==='reg';
+  return`<div class="auth" style="margin-top:0"><div class="card">
+    <h2>${isReg?'Create account':'Welcome back'}</h2>
+    <p class="meta">${isReg?'Sign up with your college email.':'Log in to your CampusPool account.'}</p>
+    <form onsubmit="return A.${isReg?'reg':'login'}(event)">
+      ${isReg?`<label class="full">Full name<input id="fn" required placeholder="Your full name" autocomplete="name"></label>
+      <label class="full">Phone number<input id="ph" required inputmode="tel" placeholder="+91 98765 43210" autocomplete="tel"></label>`:''}
+      <label class="full">College email<input id="em" type="email" required placeholder="you@college.edu" autocomplete="email"></label>
+      <label class="full">Password<input id="pw" type="password" required minlength="6" placeholder="${isReg?'Create a password (min. 6 chars)':'Your password'}" autocomplete="${isReg?'new-password':'current-password'}"></label>
+      <div class="full row" style="margin-top:4px">
+        <button class="btn">${isReg?'Send verification code':'Log in →'}</button>
+        <button type="button" class="btn g" onclick="tab='${isReg?'login':'reg'}';render()">${isReg?'I already have an account':'Create account'}</button>
+      </div>
+    </form>
+    ${isReg?`<p style="font-size:12px;color:var(--ink3);margin-top:14px;line-height:1.7">By creating an account you agree to our <button onclick="openModal('terms')" style="background:none;border:0;color:var(--brand);cursor:pointer;font-size:12px;padding:0">Terms of Service</button> and <button onclick="openModal('privacy')" style="background:none;border:0;color:var(--brand);cursor:pointer;font-size:12px;padding:0">Privacy Policy</button>.</p>`:''}
+  </div></div>
+  <div style="text-align:center;margin-top:14px">
+    <button type="button" class="btn g s" onclick="tab='home';render()">← Back to home</button>
+  </div>`;
+}
+
+/* ─── Search Rides ────────────────────────────────────────────── */
+function vSearch(){
+  const m=me();
+  const f=(q.f||'').toLowerCase();
+  const to=(q.to||'').toLowerCase();
+  const t=q.t?new Date(q.t).getTime():0;
+  // Show all open rides (not by current user) by default; filter if user searched
+  const allOpen=S.rides.filter(r=>r.st==='open'&&r.did!==m.id);
+  const rs=q.searched
+    ? allOpen.filter(r=>r.src.toLowerCase().includes(f)&&r.dst.toLowerCase().includes(to)&&(!t||Math.abs(r.time-t)<=18e5))
+    : allOpen;
+
+  const rideCards=rs.map(r=>{
+    const d=U(r.did);
+    const has=S.bk.some(b=>b.rid===r.id&&b.pid===m.id&&['Pending','Confirmed'].includes(b.st));
+    const btn=has?'<span class="tag Pending">Requested</span>':`<button class="btn s" onclick="A.req(${r.id})">Request seat</button>`;
+    return rideCard(r,btn);
+  }).join('');
+
+  return`
+    <h2>Find a Ride</h2>
+    <div class="card">
+      <form onsubmit="return A.search(event)">
+        <label>Pickup location<input id="sf" value="${esc(q.f||'')}" placeholder="e.g. Kakkanad, Ernakulam"></label>
+        <label>Destination<input id="st" value="${esc(q.to||'')}" placeholder="e.g. AJCE Campus Gate"></label>
+        <label>Travel time <span style="font-weight:400;color:var(--ink3)">(±30 min)</span><input id="sw" type="datetime-local" value="${esc(q.t||'')}"></label>
+        <div class="full row">
+          <button class="btn" id="search-btn">Search rides</button>
+          ${q.searched?`<button type="button" class="btn g" onclick="q={};render()">Clear filters</button>`:''}
+        </div>
+      </form>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <h3 style="margin:0">${q.searched?'Search results':'All available rides'}</h3>
+      <span style="font-size:13px;color:var(--ink3)">${rs.length} ride${rs.length!==1?'s':''} found</span>
+    </div>
+    ${rs.length?rideCards:`
+      <div class="empty">
+        ${q.searched?'🔍 No rides match your search. Try broader terms or clear the time filter.':'🚗 No rides are open right now.<br>Be the first — <button class="btn s" onclick="A.go(\'post\')" style="margin-top:8px">Post a ride</button>'}
+      </div>`}
+    <div class="info-box" style="margin-top:16px">💡 <b>Tip:</b> Rides are sorted by departure time. Leave the filters empty to browse all available rides. Cost shown is per passenger (fuel ÷ seats+1).</div>`;
+}
+
+/* ─── Post Ride ───────────────────────────────────────────────── */
+function vPost(){
+  return`
+    <h2>Post a Ride</h2>
+    <div class="info-box" style="margin-bottom:16px">📋 You are posting as a <b>driver</b>. The fare is calculated automatically as <b>total fuel cost ÷ (seats + 1)</b> — you pay your share too. No profit is allowed.</div>
+    <div class="card">
+      <form onsubmit="return A.post(event)">
+        <label>From (pickup)<input id="ps" required placeholder="Starting location"></label>
+        <label>To (destination)<input id="pd" required placeholder="Drop-off location"></label>
+        <label>Departure date &amp; time<input id="pt" type="datetime-local" required></label>
+        <label>Seats available <span style="font-weight:400;color:var(--ink3)">(1–6)</span><input id="pn" type="number" min="1" max="6" value="3" required></label>
+        <label>Vehicle description<input id="pv" required value="${esc(me().veh)}" placeholder="e.g. Honda City White — KL05AB1234"></label>
+        <label>Total fuel cost (₹)<input id="pc" type="number" min="0" value="200" required></label>
+        <div class="full" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;font-size:13px;color:var(--ink2)">
+          🧮 <b>Fare preview:</b> With 3 seats and ₹200 fuel, each passenger pays ₹200 ÷ 4 = <b>₹50</b>.
+        </div>
+        <div class="full"><button class="btn">Publish ride</button></div>
+      </form>
+    </div>
+    <div class="card" style="background:var(--ok-bg);border-color:rgba(5,150,105,.2)">
+      <b style="color:var(--ok)">✅ Safety checklist before posting</b>
+      <ul style="margin-top:10px;padding-left:18px;color:var(--ink2);font-size:13px;line-height:1.9">
+        <li>Your vehicle registration and driving licence are valid</li>
+        <li>The route and timing listed are accurate</li>
+        <li>You have added your emergency contact in Profile</li>
+        <li>You will confirm or decline passenger requests promptly</li>
+      </ul>
+    </div>`;
+}
+
+/* ─── Ride Card ───────────────────────────────────────────────── */
+function rideCard(r,act){
+  const d=U(r.did);
+  const dAv=d?`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-g);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">${initials(d.name)}</span>${esc(d.name)} (${ratingStr(d)})</span>`:'Unknown';
+  const pct=Math.round(((r.seats-r.left)/r.seats)*100);
+  return`<div class="card">
+    <div class="route"><b>${esc(r.src)}</b><span></span><b>${esc(r.dst)}</b></div>
+    <div class="meta">
+      📅 ${fmt(r.time)}&nbsp;&nbsp;·&nbsp;&nbsp;🚗 ${esc(r.veh)}<br>
+      👤 ${dAv}&nbsp;&nbsp;·&nbsp;&nbsp;💺 ${r.left} of ${r.seats} seats free&nbsp;&nbsp;·&nbsp;&nbsp;💰 ₹${r.fare}/seat
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:99px;margin:8px 0 12px;overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:var(--brand-g);border-radius:99px;transition:width .4s"></div>
+    </div>
+    <div class="row"><span class="tag ${r.st==='open'?'Open':''}">${r.st}</span>${act||''}</div>
+  </div>`;
+}
+
+/* ─── My Rides ────────────────────────────────────────────────── */
+const stTag=s=>`<span class="tag ${s.split(' ')[0]}">${s}</span>`;
+
+function bkRow(b,drv){
+  const r=R(b.rid),o=U(drv?b.pid:r?.did);
+  let a='';
+  const act=(f,l,c='')=>a+=`<button class="btn s ${c}" onclick="A.${f}(${b.id})">${l}</button>`;
+  if(b.st==='Pending'){drv?(act('acc','✓ Accept'),act('rej','✗ Decline','g')):act('can','Cancel','g')}
+  if(b.st==='Confirmed'){act('chat','💬 Chat','g');act('can','Cancel','g')}
+  if(b.st==='In Progress'){act('chat','💬 Chat','g');act('sos','SOS 🚨','sos')}
+  if(b.st==='SOS Active')act('res','Mark resolved');
+  if(['Confirmed','In Progress','Completed'].includes(b.st))act('rep','Report','g');
+  if(b.st==='Completed'&&!(b.rt||[]).includes(S.me))act('rate','⭐ Rate '+esc(o?.name?.split(' ')[0]||''));
+  const oAv=o?`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:20px;height:20px;border-radius:50%;background:var(--brand-g);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${initials(o.name)}</span>${esc(o.name)}</span>`:'Unknown';
+  return`<div class="row" style="margin-top:10px;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span style="display:flex;align-items:center;gap:8px">${oAv} ${stTag(b.st)}</span>
+    <span class="row">${a}</span>
+  </div>`;
+}
+
+function vMine(){
+  const m=me();
+  const mine=S.rides.filter(r=>r.did===m.id).sort((a,b)=>b.time-a.time);
+  const mb=S.bk.filter(b=>b.pid===m.id).sort((a,b)=>(R(b.rid)?.time||0)-(R(a.rid)?.time||0));
+  const pending=S.bk.filter(b=>b.st==='Pending'&&S.rides.find(r=>r.did===m.id&&r.id===b.rid)).length;
+  return`
+    <h2>My Rides</h2>
+    ${pending>0?`<div class="info-box warn">⚡ You have <b>${pending}</b> pending passenger request${pending>1?'s':''} waiting for your response.</div>`:''}
+    <h3>As driver</h3>
+    ${mine.length?mine.map(r=>{
+      const bs=S.bk.filter(b=>b.rid===r.id);
+      let a='';
+      if(r.st==='open')a+=`<button class="btn g s" onclick="A.edit(${r.id})">Edit seats</button><button class="btn r s" onclick="A.cancelRide(${r.id})">Cancel ride</button>`;
+      if(['open','closed'].includes(r.st)&&bs.some(b=>b.st==='Confirmed'))a+=`<button class="btn s" onclick="A.start(${r.id})">▶ Start ride</button>`;
+      if(r.st==='started')a+=`<button class="btn s" onclick="A.done(${r.id})">✓ Complete ride</button>`;
+      const cardHtml=rideCard(r,a);
+      const bookingRows=bs.map(b=>bkRow(b,true)).join('');
+      return bookingRows?cardHtml.replace(/<\/div><\/div>$/,`</div><div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px">${bookingRows}</div></div>`):cardHtml;
+    }).join(''):'<div class="empty">🚗 You haven\'t posted a ride yet.<br><button class="btn" onclick="A.go(\'post\')" style="margin-top:12px">Post your first ride</button></div>'}
+    <h3>As passenger</h3>
+    ${mb.length?mb.map(b=>{
+      const r=R(b.rid);
+      return`<div class="card">
+        <div class="route"><b>${esc(r?.src||'?')}</b><span></span><b>${esc(r?.dst||'?')}</b></div>
+        <div class="meta">📅 ${fmt(r?.time||0)}&nbsp;&nbsp;·&nbsp;&nbsp;💰 ₹${r?.fare||'—'}/seat</div>
+        ${bkRow(b,false)}
+      </div>`;
+    }).join(''):'<div class="empty">🎒 No bookings yet.<br><button class="btn" onclick="A.go(\'search\')" style="margin-top:12px">Find a ride</button></div>'}`;
+}
+
+/* ─── Profile ─────────────────────────────────────────────────── */
+function vProf(){
+  const m=me();
+  const avgRating=m.rc?(m.rs/m.rc).toFixed(1):null;
+  return`
+    <h2>My Profile</h2>
+    <div class="card">
+      <div class="prof-header">
+        <div class="prof-avatar">${initials(m.name)}</div>
+        <div>
+          <div style="font-weight:700;font-size:17px">${esc(m.name)}</div>
+          <div class="meta" style="margin:2px 0 0">${esc(m.email)}</div>
+          <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+            ${avgRating?`<span class="tag Confirmed">⭐ ${avgRating}/5 (${m.rc} rating${m.rc!==1?'s':''})</span>`:'<span class="tag">New member</span>'}
+            <span class="tag ${m.role==='admin'?'Confirmed':''}">${m.role==='admin'?'⚙ Admin':'🎓 Student'}</span>
+          </div>
+        </div>
+      </div>
+      <form onsubmit="return A.prof(event)">
+        <label>Full name<input id="n1" value="${esc(m.name)}" required></label>
+        <label>Phone number<input id="n2" value="${esc(m.phone)}" inputmode="tel" placeholder="+91 98765 43210"></label>
+        <label>Emergency contact <span style="color:var(--ink3);font-weight:400">(name &amp; phone — shown during SOS)</span><input id="n3" value="${esc(m.ec)}" placeholder="e.g. Mum — 98765 43210"></label>
+        <label>Vehicle <span style="color:var(--ink3);font-weight:400">(drivers only)</span><input id="n4" value="${esc(m.veh)}" placeholder="e.g. Honda City White KL05AB1234"></label>
+        <div class="full"><button class="btn">Save changes</button></div>
+      </form>
+    </div>
+    ${!m.ec?`<div class="info-box warn">⚠️ You haven't added an emergency contact yet. This is required for SOS alerts to work properly.</div>`:''}
+    <div class="info-box">🔒 Your email cannot be changed after registration. Contact an admin if you need account changes.</div>`;
+}
+
+/* ─── Admin ───────────────────────────────────────────────────── */
+function vAdm(){
+  const nonAdmins=S.users.filter(u=>u.role!=='admin');
+  return`
+    <h2>Administration</h2>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-val">${nonAdmins.length}</div><div class="stat-lbl">Users</div></div>
+      <div class="stat"><div class="stat-val">${S.rides.length}</div><div class="stat-lbl">Rides</div></div>
+      <div class="stat"><div class="stat-val">${S.bk.length}</div><div class="stat-lbl">Bookings</div></div>
+      <div class="stat"><div class="stat-val">${S.sos.length}</div><div class="stat-lbl">SOS alerts</div></div>
+      <div class="stat"><div class="stat-val">${S.rep.length}</div><div class="stat-lbl">Reports</div></div>
+    </div>
+    <h3>Users</h3>
+    ${nonAdmins.length?nonAdmins.map(u=>`
+      <div class="card row" style="justify-content:space-between;align-items:flex-start;gap:12px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="avatar" style="width:36px;height:36px;font-size:13px">${initials(u.name)}</div>
+          <div>
+            <div style="font-weight:600">${esc(u.name)} ${u.sus?'<span class="tag Rejected">Suspended</span>':''}</div>
+            <div class="meta" style="margin:2px 0 0;font-size:12px">${esc(u.email)}&nbsp;·&nbsp;Rating: ${ratingStr(u)}${u.rc&&u.rs/u.rc<3?' <span style="color:var(--bad)">⚠ Below 3.0</span>':''}</div>
+          </div>
+        </div>
+        <button class="btn s ${u.sus?'':'r'}" onclick="A.sus(${u.id})">${u.sus?'Reinstate':'Suspend'}</button>
+      </div>`).join(''):'<div class="empty">No users yet.</div>'}
+    <h3>Reports</h3>
+    ${S.rep.length?S.rep.map(r=>`<div class="card" style="border-left:3px solid var(--warn)"><b>${esc(U(r.u)?.name||'?')}</b><p class="meta" style="margin:4px 0 0">${esc(r.t)}</p></div>`).join(''):'<div class="empty">No reports filed.</div>'}
+    <h3>SOS Alerts</h3>
+    ${S.sos.length?S.sos.map(s=>`<div class="card" style="border-left:3px solid var(--bad)"><div style="display:flex;justify-content:space-between"><b style="color:var(--bad)">🚨 SOS</b><span class="meta">${fmt(s.t)}</span></div><div class="meta" style="margin-top:6px">User: <b>${esc(U(s.u)?.name||'?')}</b>&nbsp;·&nbsp;Emergency contact: <b>${esc(s.c||'not set')}</b>&nbsp;·&nbsp;Ride to ${esc(R(B(s.b)?.rid)?.dst||'?')}</div></div>`).join(''):'<div class="empty">No SOS alerts.</div>'}`;
+}
+
+/* ─── API ─────────────────────────────────────────────────────── */
+async function api(p,b){
+  try{
+    const r=await fetch(p,{method:b?'POST':'GET',headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){toast(j.error||'Something went wrong.','err');return null}
+    return j;
+  }catch(e){toast('Cannot reach the server.','err');return null}
+}
+async function load(){
+  const j=await api('/api/state');
+  if(j){
+    S=Object.assign({users:[],rides:[],bk:[],msgs:[],sos:[],rep:[]},j);
+    if(!S.me&&tab!=='reg'&&tab!=='login'&&tab!=='home')tab='login';
+    else if(S.me&&(tab==='login'||tab==='reg'))tab='search';
+    render();
+    if(chatB)A.msgs();
+  }
+}
+async function act(o,m,type){const j=await api('/api/act',o);if(j){if(m)toast(m,type||'ok');await load()}return j}
+
+/* ─── Actions ─────────────────────────────────────────────────── */
+const A={
+  go(k){
+    if(k==='out'){api('/api/logout',{}).then(()=>{S.me=null;tab='login';q={};render()});}
+    else{tab=k;render();}
+  },
+  async login(e){
+    e.preventDefault();
+    const j=await api('/api/login',{email:$('em').value,password:$('pw').value});
+    if(j){tab='search';load();}
+    return false;
+  },
+  async reg(e){
+    e.preventDefault();
+    const em=$('em').value;
+    const j=await api('/api/register',{name:$('fn').value,phone:$('ph').value,email:em,password:$('pw').value});
+    if(j){devOtp=j.dev_otp||null;pend={email:em};render();}
+    return false;
+  },
+  async verify(){
+    const j=await api('/api/verify',{email:pend.email,otp:$('otp').value});
+    if(j){pend=null;devOtp=null;tab='prof';toast('✅ Verified! Welcome to CampusPool.','ok');load();}
+  },
+  search(e){
+    e.preventDefault();
+    q={f:$('sf').value,to:$('st').value,t:$('sw').value,searched:true};
+    render();
+    return false;
+  },
+  req(id){act({type:'req',id},'Seat requested! The driver will review your request.')},
+  async post(e){
+    e.preventDefault();
+    const j=await act({type:'post',src:$('ps').value,dst:$('pd').value,time:new Date($('pt').value).getTime(),seats:+$('pn').value,veh:$('pv').value,cost:+$('pc').value},'🚗 Ride published successfully!');
+    if(j){tab='mine';render();}
+    return false;
+  },
+  acc(id){act({type:'acc',id},'✅ Request accepted. Passenger has been notified.')},
+  rej(id){act({type:'rej',id},'Request declined.')},
+  can(id){act({type:'can',id},'Booking cancelled. Seat has been released.')},
+  edit(id){const n=+prompt('Enter new total seats (1–6):');if(n>=1&&n<=6)act({type:'edit',id,seats:n},'Seats updated.')},
+  cancelRide(id){if(confirm('Cancel this ride? All confirmed passengers will be notified.'))act({type:'cancelRide',id},'Ride cancelled.')},
+  start(id){act({type:'start',id},'▶ Ride started! Safe travels.')},
+  done(id){act({type:'done',id},'✓ Ride completed. Please rate your co-travellers.','ok')},
+  sos(id){if(confirm('Send SOS alert to campus administrators?'))act({type:'sos',id},'🚨 SOS alert sent to administrators!')},
+  res(id){act({type:'res',id},'SOS resolved. Ride continues.')},
+  rep(id){const t=prompt('Describe the safety concern:');if(t)act({type:'rep',id,t},'Report sent to campus administrators.')},
+  rate(id){const s=+prompt('Rate from 1 (poor) to 5 (excellent):');if(s>=1&&s<=5)act({type:'rate',id,score:s},'⭐ Rating recorded. Thank you!')},
+  async prof(e){
+    e.preventDefault();
+    const j=await api('/api/profile',{name:$('n1').value,phone:$('n2').value,ec:$('n3').value,veh:$('n4').value});
+    if(j){toast('✅ Profile saved.','ok');load();}
+    return false;
+  },
+  sus(id){act({type:'sus',id})},
+  chat(id){chatB=id;$('chat').style.display='flex';A.msgs()},
+  closeChat(){$('chat').style.display='none';chatB=null},
+  msgs(){
+    const m=S.msgs.filter(x=>x.b===chatB);
+    $('msgs').innerHTML=m.length
+      ?m.map(x=>`<div class="m ${x.u===S.me?'me':''}"><small>${esc(U(x.u)?.name||'?')} · ${fmt(x.t)}</small>${esc(x.x)}</div>`).join('')
+      :'<div class="empty">No messages yet.<br>Agree on an exact pickup spot.</div>';
+    $('msgs').scrollTop=1e9;
+  },
+  async send(){
+    const v=$('cin').value.trim();
+    if(!v)return;
+    $('cin').value='';
+    await act({type:'msg',id:chatB,x:v});
+  }
+};
+
+/* ─── Auto-poll chat ──────────────────────────────────────────── */
+setInterval(async()=>{
+  if(S.me&&chatB){
+    try{const j=await(await fetch('/api/state')).json();if(j.msgs){S.msgs=j.msgs;A.msgs()}}catch(e){}
+  }
+},4000);
+
+tab='login';load();
+</script>
+</body>
+</html>
